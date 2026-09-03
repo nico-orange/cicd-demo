@@ -58,3 +58,20 @@ jobs:
         run: >
           ./mvnw -B clean verify
           org.sonarsource.scanner.maven:sonar-maven-plugin:sonar
+
+  snyk:
+    name: Snyk Security Scan
+    needs: test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout source code
+        uses: actions/checkout@v6
+
+      - name: Scan Maven dependencies with Snyk
+        uses: snyk/actions/maven-3-jdk-21@master
+        continue-on-error: true
+        env:
+          SNYK_TOKEN: ${{ secrets.SNYK_TOKEN }}
+        with:
+          args: --severity-threshold=high
